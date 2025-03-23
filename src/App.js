@@ -3,10 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import './App.css';
 
-import Signin from "./pages/Signin";
-import Reset from "./pages/Reset";
-import Forget from "./pages/Forget";
-import Navbar from "./components/Navbar";
+import Auth from "./pages/Auth";
 
 function App() {
   return (
@@ -19,7 +16,7 @@ function App() {
       }}
       >
         <Routes>
-          <Route path="/" element={<Signin />} />
+          <Route path="/" element={<Auth />} />
         </Routes>
       </div>
     </Router>
