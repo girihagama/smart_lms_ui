@@ -10,6 +10,7 @@ const Auth = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState(""); // Add a success message state
   const [api_base_url, setApi_base_url] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Set the API base URL if config is loaded
   useEffect(() => {
@@ -38,6 +39,7 @@ const Auth = () => {
 
   // handle login
   const handleLogin = (e) => {
+    setIsSubmitting(true);
     e.preventDefault();
     const email = e.target[0].value;
     const password = e.target[1].value;
@@ -74,12 +76,14 @@ const Auth = () => {
 
             // Show success message
             showSuccess("Login successful! Redirecting to dashboard...");
-
+            
             // Redirect to dashboard after a small delay
             setTimeout(() => {
+              setIsSubmitting(false);
               window.location.href = "/dashboard";
-            }, 2000); // Redirect after 2 seconds
+            }, 1000); // Redirect after 2 seconds
           } else {
+            setIsSubmitting(false);
             console.error("Error:", result);
             // Handle error (you can display an error message)
             showError(result.message || "Login failed. Please try again!");
@@ -88,6 +92,7 @@ const Auth = () => {
           console.error("Request failed", error);
           // Handle request failure (e.g., network error)
           showError("Network error. Please try again later.");
+          setIsSubmitting(false);
         }
       };
 
@@ -323,8 +328,16 @@ const Auth = () => {
                 </div>
               </div>
 
-              <button type="submit" className="btn w-100 py-2 gradient-btn mb-2">
-                Login
+              <button
+                type="submit"
+                className="btn w-100 py-2 gradient-btn mb-2"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <Spinner animation="border" size="sm" />
+                ) : (
+                  "Login"
+                )}
               </button>
               <center><a style={{cursor:'pointer'}} onClick={()=>{changeTab('forget')}}>Forgot password?</a></center>
             </form>
