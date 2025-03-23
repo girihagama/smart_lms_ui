@@ -1,21 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaUser, FaLock } from "react-icons/fa";
 
 const Signin = () => {
+  const [activeTab, setActiveTab] = useState("login");
+
   return (
     <div
-      className="d-flex justify-content-center align-items-center min-vh-100"
-      style={{
-        fontFamily: "'Roboto', sans-serif", // Default font for body
-      }}
+      className="d-flex justify-content-center align-items-center min-vh-100 w-100 Font-title-2"
+      style={{ fontFamily: "'Roboto', sans-serif" }}
     >
       <div
-        className="card shadow-xl p-5 rounded"
+        className="card shadow-xl p-5 rounded w-100"
         style={{
-          width: "100%",
-          maxWidth: "450px",
+          maxWidth: "500px",
           backgroundColor: "#fff",
           boxShadow: "0 10px 50px rgba(0, 180, 252, 0.2)",
         }}
@@ -23,7 +22,7 @@ const Signin = () => {
         <h2
           className="text-center mb-4"
           style={{
-            fontFamily: "'Playfair Display', serif", // Apply Playfair Display font to the title
+            fontFamily: "'Playfair Display', serif",
             fontWeight: "700",
             color: "#0D3B66",
           }}
@@ -32,95 +31,113 @@ const Signin = () => {
           <br />
           <small>Librarian Portal</small>
         </h2>
-        <form>
-          <div className="mb-4">
-            <label className="form-label">Email Address</label>
-            <div className="input-group">
-              <span className="input-group-text bg-light">
-                <FaUser color="#0D3B66" />
-              </span>
-              <input
-                type="email"
-                className="form-control"
-                placeholder="Enter your email"
-                required
-                style={{
-                  borderRadius: "25px",
-                  boxShadow: "0 2px 15px rgba(0, 0, 0, 0.1)",
-                  transition: "all 0.3s ease",
-                }}
-              />
-            </div>
-          </div>
 
-          <div className="mb-4">
-            <label className="form-label">Password</label>
-            <div className="input-group">
-              <span className="input-group-text bg-light">
-                <FaLock color="#0D3B66" />
-              </span>
-              <input
-                type="password"
-                className="form-control"
-                placeholder="Enter your password"
-                required
-                style={{
-                  borderRadius: "25px",
-                  boxShadow: "0 2px 15px rgba(0, 0, 0, 0.1)",
-                  transition: "all 0.3s ease",
-                }}
-              />
-            </div>
-          </div>
+        {/* Centered Tabs */}
+        <div className="d-flex justify-content-center pb-4">
+          <ul className="nav nav-tabs">
+            <li className="nav-item">
+              <button
+                className={`nav-link ${activeTab === "login" ? "active" : ""}`}
+                onClick={() => setActiveTab("login")}
+              >
+                Login
+              </button>
+            </li>
+            <li className="nav-item">
+              <button
+                className={`nav-link ${activeTab === "forget" ? "active" : ""}`}
+                onClick={() => setActiveTab("forget")}
+              >
+                Forgot Password
+              </button>
+            </li>
+            <li className="nav-item">
+              <button
+                className={`nav-link ${activeTab === "activate" ? "active" : ""}`}
+                onClick={() => setActiveTab("activate")}
+              >
+                Activate / Reset
+              </button>
+            </li>
+          </ul>
+        </div>
 
-          <div className="d-flex justify-content-between mb-4">
-            <div>
-              <input type="checkbox" id="remember" />
-              <label htmlFor="remember" className="ms-2">
-                Remember me
-              </label>
-            </div>
-            <Link
-              to="/forget"
-              className="text-decoration-none"
-              style={{ color: "#00A8A8" }}
-            >
-              Forgot Password?
-            </Link>
-          </div>
+        {/* Tab Content */}
+        <div>
+          {activeTab === "login" && (
+            <form>
+              <div className="mb-4">
+                <label className="form-label">Email Address</label>
+                <div className="input-group">
+                  <span className="input-group-text bg-light">
+                    <FaUser color="#0D3B66" />
+                  </span>
+                  <input
+                    type="email"
+                    className="form-control"
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+              </div>
 
-          <button
-            type="submit"
-            className="btn btn-gradient w-100 py-2"
-            style={{
-              borderRadius: "25px",
-              background: "linear-gradient(to right, #0D3B66, #00A8A8)",
-              color: "white",
-              boxShadow: "0 5px 15px rgba(0, 0, 0, 0.2)",
-              transition: "0.3s ease-in-out",
-            }}
-            onMouseOver={(e) => (e.target.style.background = "#00A8A8")}
-            onMouseOut={(e) =>
-              (e.target.style.background =
-                "linear-gradient(to right, #0D3B66, #00A8A8)")
-            }
-          >
-            Login
-          </button>
+              <div className="mb-4">
+                <label className="form-label">Password</label>
+                <div className="input-group">
+                  <span className="input-group-text bg-light">
+                    <FaLock color="#0D3B66" />
+                  </span>
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Enter your password"
+                    required
+                  />
+                </div>
+              </div>
 
-          <p
-            className="text-center mt-4 Roboto"
-          >
-            New to platform?{" "}
-            <Link
-              to="/signup"
-              className="text-primary"
-              style={{ textDecoration: "underline" }}
-            >
-              Activate
-            </Link>
-          </p>
-        </form>
+              <button type="submit" className="btn w-100 py-2 gradient-btn">
+                Login
+              </button>
+            </form>
+          )}
+
+          {activeTab === "forget" && (
+            <form>
+              <div className="mb-4">
+                <label className="form-label">Enter your registered email</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  placeholder="Enter email"
+                  required
+                />
+              </div>
+
+              <button type="submit" className="btn w-100 py-2 gradient-btn">
+                Send Reset Link
+              </button>
+            </form>
+          )}
+
+          {activeTab === "activate" && (
+            <form>
+              <div className="mb-4">
+                <label className="form-label">Enter Activation Code</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter code"
+                  required
+                />
+              </div>
+
+              <button type="submit" className="btn w-100 py-2 gradient-btn">
+                Activate Account
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );

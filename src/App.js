@@ -11,7 +11,7 @@ import Navbar from "./components/Navbar";
 function App() {
   return (
     <Router>
-      <div 
+      <div
       style={{
         backgroundColor: "#252525", // Set the entire screen's background to black
         color: "white", // Set text color to white for contrast

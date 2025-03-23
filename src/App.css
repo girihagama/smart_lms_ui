@@ -1,12 +1,35 @@
-/* Apply Roboto font globally */
-body {
-  font-family: 'Roboto', sans-serif;
-  margin: 0;
-  padding: 0;
+/* Fonts */
+.Font-title-1 {
+  font-family: 'Playfair Display', sans-serif !important;
+}
+.Font-title-2 {
+  font-family: 'Roboto Condensed', sans-serif !important;
 }
 .Font-text-1 {
   font-family: 'Roboto', sans-serif !important;
 }
-.Font-text-1 {
-  font-family: 'Roboto', sans-serif !important;
+.Font-text-2 {
+  font-family: 'Calibri', sans-serif !important;
+}
+
+.gradient-btn {
+  border-radius: 25px;
+  background: linear-gradient(to right, #0D3B66, #00A8A8);
+  color: white !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: background 1s ease-in-out;
+}
+
+.gradient-btn:hover {
+  animation: gradientAnimation 1s forwards;
+}
+
+/* Keyframes for smooth gradient animation */
+@keyframes gradientAnimation {
+  from {
+    background: linear-gradient(to right, #0D3B66, #00A8A8);
+  }
+  to {
+    background: #00A8A8;
+  }
 }
