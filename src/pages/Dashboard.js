@@ -1,7 +1,12 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FirebaseConfigContext } from "../FirebaseConfigContext"; // Import context
 import Spinner from "react-bootstrap/Spinner"; // Import loading spinner
+
+import { FirebaseConfigContext } from "../FirebaseConfigContext"; // Import context
+
+import Header from '../components/Header';
+import Sidebar from '../components/Sidebar';
+import DashboardContent from '../components/DashboardContent';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -35,10 +40,19 @@ const Dashboard = () => {
   if (!isAuthenticated) return null; // Prevent unauthorized rendering
 
   return (
-    <div>
-      <h1>Welcome to the Dashboard</h1>
-      <p>Your content goes here...</p>
+<div style={{ display: 'flex' }}>
+    {/* Sidebar */}
+    <Sidebar />
+
+    {/* Main Content */}
+    <div style={{ flexGrow: 1, marginLeft: '250px' }}>
+      {/* Header */}
+      <Header />
+
+      {/* Dashboard Content */}
+      <DashboardContent />
     </div>
+  </div>
   );
 };
 
