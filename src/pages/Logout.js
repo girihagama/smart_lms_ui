@@ -5,11 +5,13 @@ function Logout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    localStorage.clear(); // Clear all localStorage items
-    navigate("/"); // Redirect to login
-  }, []);
+    console.log("Logout component mounted."); // Debugging step
+    localStorage.clear(); // Clear all local storage
+    console.log("Local storage cleared.");
+    navigate("/", { replace: true });
+  }, [navigate]);
 
-  return null; // No UI needed
+  return <p style={{color:'white'}}>Logging out...</p>; // Show something on screen
 }
 
 export default Logout;

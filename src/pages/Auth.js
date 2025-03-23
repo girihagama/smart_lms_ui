@@ -63,13 +63,13 @@ const Auth = () => {
             if (result) {
               result.user.user_role === "Librarian"
                 ? localStorage.setItem("token", result.token)
-                : localStorage.removeItem("token");
+                : localStorage.clear();
               result.user.user_email
                 ? localStorage.setItem("user_email", result.user.user_email)
-                : localStorage.removeItem("user_email");
+                : localStorage.clear();
               result.user.user_role
                 ? localStorage.setItem("user_role", result.user.user_role)
-                : localStorage.removeItem("user_role");
+                : localStorage.clear();
             }
 
             // Show success message
@@ -219,7 +219,7 @@ const Auth = () => {
         >
           Smart Library
           <br />
-          <small>Librarian Portal</small>
+          <small className="Font-title-2">Librarian Portal</small>
         </h2>
 
         {/* Centered Tabs */}
