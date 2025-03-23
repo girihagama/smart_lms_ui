@@ -1,0 +1,12 @@
+/* Apply Roboto font globally */
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.Font-text-1 {
+  font-family: 'Roboto', sans-serif !important;
+}
+.Font-text-1 {
+  font-family: 'Roboto', sans-serif !important;
+}
