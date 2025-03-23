@@ -28,8 +28,9 @@ const Signin = () => {
             color: "#0D3B66",
           }}
         >
-          Smart Library<br/>
-          <small>Librarian Portal</small>   
+          Smart Library
+          <br />
+          <small>Librarian Portal</small>
         </h2>
         <form>
           <div className="mb-4">
@@ -79,7 +80,11 @@ const Signin = () => {
                 Remember me
               </label>
             </div>
-            <Link to="/forget" className="text-decoration-none" style={{ color: "#00A8A8" }}>
+            <Link
+              to="/forget"
+              className="text-decoration-none"
+              style={{ color: "#00A8A8" }}
+            >
               Forgot Password?
             </Link>
           </div>
@@ -95,14 +100,23 @@ const Signin = () => {
               transition: "0.3s ease-in-out",
             }}
             onMouseOver={(e) => (e.target.style.background = "#00A8A8")}
-            onMouseOut={(e) => (e.target.style.background = "linear-gradient(to right, #0D3B66, #00A8A8)")}
+            onMouseOut={(e) =>
+              (e.target.style.background =
+                "linear-gradient(to right, #0D3B66, #00A8A8)")
+            }
           >
             Login
           </button>
 
-          <p className="text-center mt-4">
+          <p
+            className="text-center mt-4 Roboto"
+          >
             New to platform?{" "}
-            <Link to="/signup" className="text-primary" style={{ textDecoration: "underline" }}>
+            <Link
+              to="/signup"
+              className="text-primary"
+              style={{ textDecoration: "underline" }}
+            >
               Activate
             </Link>
           </p>
