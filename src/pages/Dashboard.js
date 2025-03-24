@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Keep this import
-import Spinner from "react-bootstrap/Spinner"; // Import loading spinner
+import { useNavigate, Outlet, useLocation, Link } from "react-router-dom"; // Keep this import
+import { Breadcrumb, Spinner } from "react-bootstrap";
 
 import { FirebaseConfigContext } from "../FirebaseConfigContext"; // Import context
 
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
-import Summary from "./Summary";
-import BooksAdd from "./Book";
-import BooksManage from "./Book";
-import MembersAdd from "./Member";
-import MembersList from "./Member";
-import TransactionsIssue from "./Transaction";
-import TransactionsReturn from "./Transaction";
 import { Routes, Route } from "react-router-dom"; // Make sure Routes and Route are imported
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const location = useLocation();
+  // Generate breadcrumb paths dynamically
+  const pathnames = location.pathname.split("/").filter((x) => x);
 
   useEffect(() => {
     const token = localStorage.getItem("token"); // Get token from storage
@@ -55,23 +52,30 @@ const Dashboard = () => {
       <div style={{ flexGrow: 1, marginLeft: "250px" }}>
         <Header />
 
-        <Routes>
-          {/* Define your Routes here */}
-          <Route path="/dashboard" element={<Summary />} />
-          <Route path="/dashboard/books/add" element={<BooksAdd />} />
-          <Route path="/dashboard/books/manage" element={<BooksManage />} />
-          <Route path="/dashboard/members/add" element={<MembersAdd />} />
-          <Route path="/dashboard/members/list" element={<MembersList />} />
-          <Route
-            path="/dashboard/transactions/issue"
-            element={<TransactionsIssue />}
-          />
-          <Route
-            path="/dashboard/transactions/return"
-            element={<TransactionsReturn />}
-          />
-          {/* Add other routes as needed */}
-        </Routes>
+        {/* Breadcrumbs */}
+        <Breadcrumb
+          className="p-4 Font-title-2"
+          style={{ backgroundColor: "#f8f9fa" }}
+        >
+          {pathnames.map((name, index) => {
+            const routeTo = `/${pathnames.slice(0, index + 1).join("/")}`;
+            return (
+              <Breadcrumb.Item
+                style={{ textDecoration: "none" }}
+                key={name}
+                /* linkAs={Link} */ /* linkProps={{ to: routeTo }} */ active={
+                  index === pathnames.length - 1
+                }
+              >
+                {name.charAt(0).toUpperCase() + name.slice(1)}
+              </Breadcrumb.Item>
+            );
+          })}
+        </Breadcrumb>
+
+        <div className="p-4" style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
+          <Outlet className="p-4" />
+        </div>
       </div>
     </div>
   );

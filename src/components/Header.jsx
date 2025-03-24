@@ -15,7 +15,7 @@ const NavbarTop = () => {
       bg="primary"
       variant="dark"
       expand="lg"
-      className="px-4 py-3 Gradient-1"
+      className="px-4 py-3 Gradient-2"
       style={{
         position: "sticky",
         top: 0,

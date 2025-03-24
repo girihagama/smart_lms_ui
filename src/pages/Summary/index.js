@@ -1,5 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
-const DashboardContent = () => {
-  <>DashboardContent</>;
+const Summary = () => {
+  return (
+    <div style={{color: "black"}}>
+      <h1>Dashboard</h1>
+      <p>Welcome to the dashboard!</p>
+    </div>
+  );
 };
-export default DashboardContent;
+export default Summary;
