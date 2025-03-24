@@ -72,11 +72,14 @@ const Auth = () => {
               result.user.user_role
                 ? localStorage.setItem("user_role", result.user.user_role)
                 : localStorage.clear();
+              result.user.user_role
+                ? localStorage.setItem("user_name", result.user.user_name)
+                : localStorage.clear();
             }
 
             // Show success message
             showSuccess("Login successful! Redirecting to dashboard...");
-            
+
             // Redirect to dashboard after a small delay
             setTimeout(() => {
               setIsSubmitting(false);
@@ -339,7 +342,16 @@ const Auth = () => {
                   "Login"
                 )}
               </button>
-              <center><a style={{cursor:'pointer'}} onClick={()=>{changeTab('forget')}}>Forgot password?</a></center>
+              <center>
+                <a
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    changeTab("forget");
+                  }}
+                >
+                  Forgot password?
+                </a>
+              </center>
             </form>
           )}
 
@@ -367,10 +379,22 @@ const Auth = () => {
                 </div>
               </div>
 
-              <button type="submit" className="btn w-100 py-2 gradient-btn mb-2">
+              <button
+                type="submit"
+                className="btn w-100 py-2 gradient-btn mb-2"
+              >
                 Send Reset Link
               </button>
-              <center><a style={{cursor:'pointer'}} onClick={()=>{changeTab('activate')}}>Already have an OTP?</a></center>
+              <center>
+                <a
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    changeTab("activate");
+                  }}
+                >
+                  Already have an OTP?
+                </a>
+              </center>
             </form>
           )}
 
@@ -426,10 +450,22 @@ const Auth = () => {
                 </div>
               </div>
 
-              <button type="submit" className="btn w-100 py-2 gradient-btn mb-2">
+              <button
+                type="submit"
+                className="btn w-100 py-2 gradient-btn mb-2"
+              >
                 Activate Account
               </button>
-              <center><a style={{cursor:'pointer'}} onClick={()=>{changeTab('login')}}>Go to login?</a></center>
+              <center>
+                <a
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    changeTab("login");
+                  }}
+                >
+                  Go to login?
+                </a>
+              </center>
             </form>
           )}
         </div>

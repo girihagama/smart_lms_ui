@@ -1,31 +1,79 @@
-import React from 'react';
-import { Navbar, Container, Form, FormControl, Nav, Image, Button } from 'react-bootstrap';
+import React, { useState } from "react";
+import { Navbar, Container, Nav, Image, NavDropdown } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 const NavbarTop = () => {
+  const userName = localStorage.getItem("user_name") || "Guest";
+  const [isCollapsed, setIsCollapsed] = useState(true);
+
+  const toggleNavbar = () => {
+    setIsCollapsed((prev) => !prev);
+  };
+
   return (
-    <Navbar bg="primary" variant="dark" className="px-4 py-3" expand="lg">
-      <Container fluid>
-        <Navbar.Brand className="fw-bold text-white">
-          Welcome, Indunil Girihagama
-          <div style={{ fontSize: "0.8rem", fontWeight: "normal" }}>Librarian | Smart Library</div>
+    <Navbar
+      bg="primary"
+      variant="dark"
+      expand="lg"
+      className="px-4 py-3 Gradient-2"
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 1030, // ensures it stays above other content
+        minHeight: "70px",
+      }}
+    >
+      <Container
+        fluid
+        className="d-flex justify-content-between align-items-center"
+      >
+        {/* Left Section - Welcome & Role */}
+        <Navbar.Brand className="text-white">
+          <div style={{ fontSize: "28px", fontWeight: "600" }}>
+            Welcome, {userName}
+          </div>
+          <div style={{ fontSize: "16px", fontWeight: "400", opacity: 0.85 }}>
+            Librarian | Smart Library
+          </div>
         </Navbar.Brand>
 
-        <Form className="d-flex ms-auto me-4" style={{ width: "300px" }}>
-          <FormControl type="search" placeholder="Search books" className="me-2" />
-          <Button variant="light">🔍</Button>
-        </Form>
+        {/* Navbar Toggle (Hamburger menu for mobile) */}
+        <Navbar.Toggle
+          aria-controls="basic-navbar-nav"
+          onClick={toggleNavbar}
+        />
 
-        <Nav className="align-items-center">
-          <div className="text-white me-2">Indunil Girihagama</div>
-          <Image
-            src="https://via.placeholder.com/40"
-            roundedCircle
-            width={40}
-            height={40}
-            alt="User Avatar"
-          />
-          <Nav.Link href="#" className="text-white ms-2">Logout</Nav.Link>
-        </Nav>
+        {/* Right Section - User Info */}
+        <Navbar.Collapse id="basic-navbar-nav" in={isCollapsed}>
+          <Nav className="ms-auto d-flex align-items-center gap-3">
+            <div className="text-end text-white">
+              <div style={{ fontWeight: "500", fontSize: "16px" }}>
+                {userName}
+              </div>
+              <Link
+                to="/logout"
+                className="text-white"
+                style={{
+                  fontSize: "14px",
+                  textDecoration: "none",
+                  opacity: 0.9,
+                }}
+                onMouseOver={(e) => (e.target.style.opacity = 1)}
+                onMouseOut={(e) => (e.target.style.opacity = 0.9)}
+              >
+                Logout
+              </Link>
+            </div>
+            <Image
+              src="https://cdn1.iconfinder.com/data/icons/user-pictures/100/male3-512.png"
+              roundedCircle
+              width={50}
+              height={50}
+              alt="User Avatar"
+              style={{ border: "2px solid #fff" }}
+            />
+          </Nav>
+        </Navbar.Collapse>
       </Container>
     </Navbar>
   );
