@@ -13,8 +13,8 @@ import Dashboard from "./pages/Dashboard"; // Import the dashboard page
 import Logout from "./pages/Logout"; // Import the dashboard page
 
 import Summary from "./pages/Summary";
-import BooksAdd from "./pages/Book";
-import BooksManage from "./pages/Book";
+import SingleBook from "./pages/Book/SingleBook";
+import ManageBooks from "./pages/Book/ManageBooks";
 import MembersAdd from "./pages/Member";
 import MembersList from "./pages/Member";
 import TransactionsIssue from "./pages/Transaction";
@@ -33,6 +33,7 @@ function App() {
             color: "white", // Set text color to white for contrast
             minHeight: "100vh", // Ensure the background covers the entire screen
           }}
+          className="Font-title-2"
         >
           <Routes>
             <Route
@@ -44,8 +45,8 @@ function App() {
               element={token ? <Dashboard /> : <Navigate to="/" />}
             >
               <Route index element={<Summary/>} />
-              <Route path="books/add" element={<BooksAdd />} />
-              <Route path="books/manage" element={<BooksManage />} />
+              <Route path="books/book" element={<SingleBook />} />
+              <Route path="books/manage" element={<ManageBooks />} />
               <Route path="members/add" element={<MembersAdd />} />
               <Route path="members/list" element={<MembersList />} />
               <Route

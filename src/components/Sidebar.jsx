@@ -21,8 +21,8 @@ const navItems = [
     label: "Books",
     icon: <FaBook />,
     children: [
-      { label: "Add Book", to: "/dashboard/books/add" },
-      { label: "Manage Books", to: "/dashboard/books/manage" },
+      { label: "Add / Edit Book", to: "/dashboard/books/book" },
+      { label: "View Books", to: "/dashboard/books/manage" },
     ],
   },
   {
@@ -30,6 +30,7 @@ const navItems = [
     icon: <FaUsers />,
     children: [
       { label: "Add Member", to: "/dashboard/members/add" },
+      { label: "Edit Member", to: "/dashboard/members/edit" },
       { label: "View Members", to: "/dashboard/members/list" },
     ],
   },
@@ -39,6 +40,7 @@ const navItems = [
     children: [
       { label: "Issue Book", to: "/dashboard/transactions/issue" },
       { label: "Return Book", to: "/dashboard/transactions/return" },
+      { label: "View Transactions", to: "/dashboard/transactions/view" },
     ],
   },
 ];
@@ -69,9 +71,18 @@ const Sidebar = () => {
       }}
     >
       {/* Top Section: Navigation */}
-      <Nav className="flex-column text-white p-4 gap-2">
-        <h5 className="text-white mb-4">📚 SMART Library</h5>
+      <Nav className="flex-column text-white p-4 Font-title-2">
+        <h5
+          style={{ minHeight: "50px" }}
+          className="text-white mb-4 Font-title-1"
+        >
+          <center><span style={{fontSize:'50px'}}>📚</span></center>
+          <br/>
+          <center>Smart Library</center>
+        </h5>
 
+        <hr/>
+        
         {navItems.map((item, index) =>
           item.children ? (
             <div key={index}>
@@ -129,7 +140,7 @@ const Sidebar = () => {
       </Nav>
 
       {/* Bottom Section: Sign Out */}
-      <div className="p-3">
+      <div className="p-4">
         <button
           className="btn btn-danger w-100 d-flex align-items-center justify-content-center"
           onClick={handleSignOut} // Using the handleSignOut function here
