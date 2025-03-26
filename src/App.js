@@ -17,8 +17,8 @@ import SingleBook from "./pages/Book/SingleBook";
 import ManageBooks from "./pages/Book/ManageBooks";
 import SingleUser from "./pages/User/SingleUser";
 import ManageUsers from "./pages/User/ManageUsers";
-import TransactionsIssue from "./pages/Transaction";
-import TransactionsReturn from "./pages/Transaction";
+import TransactionsIssue from "./pages/Transaction/BorrowReturn";
+import TransactionsReturn from "./pages/Transaction/BorrowReturn";
 
 function App() {
   // Check if token exists in local storage
@@ -44,7 +44,7 @@ function App() {
               path="/dashboard/*"
               element={token ? <Dashboard /> : <Navigate to="/" />}
             >
-              <Route index element={<Summary/>} />
+              <Route index element={<Summary />} />
               <Route path="books/book" element={<SingleBook />} />
               <Route path="books/manage" element={<ManageBooks />} />
               <Route path="users/user" element={<SingleUser />} />

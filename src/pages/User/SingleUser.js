@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Form, Button, Card, Container, Row, Col, ButtonGroup } from "react-bootstrap";
+import { Form, Button, Card, Row, Col, ButtonGroup } from "react-bootstrap";
 
 const SingleBook = () => {
-  const [newBook, setNewBook] = useState(true);
+  const [newUser, setNewUser] = useState(true);
   const [formData, setFormData] = useState({
     user_email: "",
     user_name: "",
+    user_mobile: "",
     user_address: "",
-    book_image: "",
-    book_readers: 0,
-    book_rating: 0,
-    book_late_fee: "",
-    book_condition: "Good",
-    book_status: "1",
+    user_dob: "",
+    user_max_books: 5, // New Field: Max Books Can Borrow
+    user_ismember: "1", // Member Status
+    user_isactive: "1", // New Field: Active Account
   });
 
   const handleChange = (e) => {
@@ -22,28 +21,27 @@ const SingleBook = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Book Data Submitted:", formData);
-    alert("Book Data Submitted!");
+    console.log("User Data Submitted:", formData);
+    alert("User Data Submitted!");
   };
 
-  const handleReset = (e) => {
+  const handleReset = () => {
     alert("User Data Cleared!");
-    setNewBook(true);
+    setNewUser(true);
     setFormData({
       user_email: "",
       user_name: "",
+      user_mobile: "",
       user_address: "",
-      book_image: "",
-      book_readers: 0,
-      book_rating: 0,
-      book_late_fee: "",
-      book_condition: "Good",
-      book_status: "1",
+      user_dob: "",
+      user_max_books: 5,
+      user_ismember: "1",
+      user_isactive: "1", // Reset to Active
     });
   };
 
   useEffect(() => {
-    //console.log("Form Data:", formData);
+    // console.log("Form Data:", formData);
   }, [formData.user_email]);
 
   return (
@@ -54,14 +52,16 @@ const SingleBook = () => {
             <Row>
               <Col md={12}>
                 <Form.Group className="mb-3">
-                <h2 className="fw-bold text-primary text-center mb-3">📚 Add / Edit Book</h2>
+                  <h2 className="fw-bold text-primary text-center mb-3">
+                    📚 Add / Edit User
+                  </h2>
                   <hr />
                 </Form.Group>
               </Col>
             </Row>
 
             <Row>
-              <Col md={3}>
+              <Col md={4}>
                 <Form.Group className="mb-3">
                   <Form.Label>Email</Form.Label>
                   <Form.Control
@@ -73,7 +73,7 @@ const SingleBook = () => {
                   />
                 </Form.Group>
               </Col>
-              <Col md={6}>
+              <Col md={8}>
                 <Form.Group className="mb-3">
                   <Form.Label>User Name</Form.Label>
                   <Form.Control
@@ -85,7 +85,35 @@ const SingleBook = () => {
                   />
                 </Form.Group>
               </Col>
-              <Col md={3}>
+            </Row>
+
+            <Row>
+              <Col md={4}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Date of Birth</Form.Label>
+                  <Form.Control
+                    type="date"
+                    name="user_dob"
+                    value={formData.user_dob}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Max Books Can Borrow</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="user_max_books"
+                    value={formData.user_max_books}
+                    onChange={handleChange}
+                    min="1"
+                    max="10"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={4}>
                 <Form.Group className="mb-3">
                   <Form.Label>Mobile Number</Form.Label>
                   <Form.Control
@@ -111,56 +139,33 @@ const SingleBook = () => {
               />
             </Form.Group>
 
-            <Row>
-              <Col md={4}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Book Image</Form.Label>
-                  <Form.Control
-                    type="file"
-                    name="book_image"
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={4}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Late Fee</Form.Label>
-                  <Form.Control
-                    type="number"
-                    step="0.01"
-                    name="book_late_fee"
-                    value={formData.book_late_fee}
-                    onChange={handleChange}
-                    required
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={4}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Condition</Form.Label>
-                  <Form.Select
-                    name="book_condition"
-                    value={formData.book_condition}
-                    onChange={handleChange}
-                  >
-                    <option value="Good">Good</option>
-                    <option value="Mint">Mint</option>
-                    <option value="Damaged">Damaged</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-            </Row>
-
+            {/* Member Switch */}
             <Form.Group className="mb-3">
               <Form.Check
                 type="switch"
-                label="Available"
-                name="book_status"
-                checked={formData.book_status === "1"}
+                label="Member"
+                name="user_ismember"
+                checked={formData.user_ismember === "1"}
                 onChange={() =>
                   setFormData({
                     ...formData,
-                    book_status: formData.book_status === "1" ? "0" : "1",
+                    user_ismember: formData.user_ismember === "1" ? "0" : "1",
+                  })
+                }
+              />
+            </Form.Group>
+
+            {/* Active Account Switch */}
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="switch"
+                label="Active"
+                name="user_isactive"
+                checked={formData.user_isactive === "1"}
+                onChange={() =>
+                  setFormData({
+                    ...formData,
+                    user_isactive: formData.user_isactive === "1" ? "0" : "1",
                   })
                 }
               />
@@ -172,7 +177,7 @@ const SingleBook = () => {
                   Clear / Reset Form
                 </Button>
                 <Button variant="primary" type="submit">
-                  {(newBook)? "Add Book" : "Update Book"}
+                  {newUser ? "Add User" : "Update User"}
                 </Button>
               </ButtonGroup>
             </div>

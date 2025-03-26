@@ -48,60 +48,25 @@ const MyTable = () => {
       condition: "Good",
       status: "Available",
     },
-    {
-      id: 1743116187176,
-      name: "Sunrise on the Reaping",
-      description: "Scholastic Press (March 18, 2025)",
-      image: "https://backend.24x7retail.com/uploads/1743116187176.jpg",
-      latefee: 38,
-      condition: "Mint",
-      status: "Available",
-    },
-    {
-      id: 1743356789021,
-      name: "Where the Crawdads Sing",
-      description: "G.P. Putnam's Sons (August 14, 2018)",
-      image: "https://backend.24x7retail.com/uploads/1743356789021.jpg",
-      latefee: 55,
-      condition: "Mint",
-      status: "Available",
-    },
-    {
-      id: 1743490056123,
-      name: "Atomic Habits",
-      description: "Avery (October 16, 2018)",
-      image: "https://backend.24x7retail.com/uploads/1743490056123.jpg",
-      latefee: 40,
-      condition: "Good",
-      status: "Available",
-    },
-    {
-      id: 1743541278009,
-      name: "Project Hail Mary",
-      description: "Ballantine Books (May 4, 2021)",
-      image: "https://backend.24x7retail.com/uploads/1743541278009.jpg",
-      latefee: 65,
-      condition: "Mint",
-      status: "Available",
-    },
-    {
-      id: 1743689421078,
-      name: "Dune",
-      description: "Ace (August 25, 2005)",
-      image: "https://backend.24x7retail.com/uploads/1743689421078.jpg",
-      latefee: 70,
-      condition: "Good",
-      status: "Available",
-    }
-];
+  ];
 
-
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [resultsPerPage, setResultsPerPage] = useState(10);
-  const totalPages = Math.ceil(data.length / resultsPerPage);
+  const [resultsPerPage, setResultsPerPage] = useState(5);
+
+  // Filter books based on search term
+  const filteredBooks = data.filter(
+    (book) =>
+      book.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      book.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      book.condition.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      book.status.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredBooks.length / resultsPerPage);
 
   // Get current books for the page
-  const currentBooks = data.slice(
+  const currentBooks = filteredBooks.slice(
     (currentPage - 1) * resultsPerPage,
     currentPage * resultsPerPage
   );
@@ -116,6 +81,16 @@ const MyTable = () => {
       <Card className="shadow p-4 border-0 rounded-4">
         <h2 className="fw-bold text-primary text-center mb-3">📚 View Books</h2>
         <hr />
+
+        {/* Search Bar */}
+        <Form.Group className="mb-3">
+          <Form.Control
+            type="text"
+            placeholder="🔍 Search books..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </Form.Group>
 
         <Card.Body className="p-0">
           {/* Table */}
@@ -132,24 +107,38 @@ const MyTable = () => {
               </tr>
             </thead>
             <tbody>
-              {currentBooks.map((book, index) => (
+              {currentBooks.map((book) => (
                 <tr key={book.id} className="align-middle">
                   <td>{book.id}</td>
                   <td className="fw-semibold">{book.name}</td>
                   <td>{book.description}</td>
                   <td>
-                    <Image 
-                      src={book.image} 
-                      alt="Book Cover" 
-                      thumbnail 
-                      style={{ width: "50px", height: "auto", cursor: "pointer" }} 
+                    <Image
+                      src={book.image}
+                      alt="Book Cover"
+                      thumbnail
+                      style={{
+                        width: "50px",
+                        height: "auto",
+                        cursor: "pointer",
+                      }}
                       onClick={() => window.open(book.image, "_blank")}
                     />
                   </td>
-                  <td className="text-danger fw-bold">Rs.{book.latefee.toFixed(2)}</td>
-                  <td><span className="badge bg-info">{book.condition}</span></td>
+                  <td className="text-danger fw-bold">
+                    Rs.{book.latefee.toFixed(2)}
+                  </td>
                   <td>
-                    <span className={`badge ${book.status === "Available" ? "bg-success" : "bg-secondary"}`}>
+                    <span className="badge bg-info">{book.condition}</span>
+                  </td>
+                  <td>
+                    <span
+                      className={`badge ${
+                        book.status === "Available"
+                          ? "bg-success"
+                          : "bg-secondary"
+                      }`}
+                    >
                       {book.status}
                     </span>
                   </td>
@@ -162,7 +151,9 @@ const MyTable = () => {
           <div className="d-flex justify-content-between align-items-center mt-3">
             {/* Results Per Page Dropdown */}
             <Form.Group className="d-flex align-items-center">
-              <Form.Label className="me-2 mb-0 fw-semibold">Results Per Page:</Form.Label>
+              <Form.Label className="me-2 mb-0 fw-semibold">
+                Results Per Page:
+              </Form.Label>
               <Form.Select
                 value={resultsPerPage}
                 onChange={(e) => setResultsPerPage(Number(e.target.value))}
@@ -177,9 +168,11 @@ const MyTable = () => {
 
             {/* Pagination */}
             <Pagination className="mb-0">
-              <Pagination.Prev 
-                disabled={currentPage === 1} 
-                onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)} 
+              <Pagination.Prev
+                disabled={currentPage === 1}
+                onClick={() =>
+                  currentPage > 1 && handlePageChange(currentPage - 1)
+                }
               />
               {[...Array(totalPages)].map((_, index) => (
                 <Pagination.Item
@@ -190,9 +183,11 @@ const MyTable = () => {
                   {index + 1}
                 </Pagination.Item>
               ))}
-              <Pagination.Next 
-                disabled={currentPage === totalPages} 
-                onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)} 
+              <Pagination.Next
+                disabled={currentPage === totalPages}
+                onClick={() =>
+                  currentPage < totalPages && handlePageChange(currentPage + 1)
+                }
               />
             </Pagination>
           </div>
