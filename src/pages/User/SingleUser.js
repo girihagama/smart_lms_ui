@@ -4,9 +4,9 @@ import { Form, Button, Card, Container, Row, Col, ButtonGroup } from "react-boot
 const SingleBook = () => {
   const [newBook, setNewBook] = useState(true);
   const [formData, setFormData] = useState({
-    book_id: "",
-    book_name: "",
-    book_description: "",
+    user_email: "",
+    user_name: "",
+    user_address: "",
     book_image: "",
     book_readers: 0,
     book_rating: 0,
@@ -27,12 +27,12 @@ const SingleBook = () => {
   };
 
   const handleReset = (e) => {
-    alert("Book Data Cleared!");
+    alert("User Data Cleared!");
     setNewBook(true);
     setFormData({
-      book_id: "",
-      book_name: "",
-      book_description: "",
+      user_email: "",
+      user_name: "",
+      user_address: "",
       book_image: "",
       book_readers: 0,
       book_rating: 0,
@@ -44,7 +44,7 @@ const SingleBook = () => {
 
   useEffect(() => {
     //console.log("Form Data:", formData);
-  }, [formData.book_id]);
+  }, [formData.user_email]);
 
   return (
     <div>
@@ -63,23 +63,35 @@ const SingleBook = () => {
             <Row>
               <Col md={3}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Book ID</Form.Label>
+                  <Form.Label>Email</Form.Label>
                   <Form.Control
-                    type="text"
-                    name="book_id"
-                    value={formData.book_id}
+                    type="email"
+                    name="user_email"
+                    value={formData.user_email}
                     onChange={handleChange}
                     required
                   />
                 </Form.Group>
               </Col>
-              <Col md={9}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Book Name</Form.Label>
+                  <Form.Label>User Name</Form.Label>
                   <Form.Control
                     type="text"
-                    name="book_name"
-                    value={formData.book_name}
+                    name="user_name"
+                    value={formData.user_name}
+                    onChange={handleChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Mobile Number</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="user_mobile"
+                    value={formData.user_mobile}
                     onChange={handleChange}
                     required
                   />
@@ -88,12 +100,12 @@ const SingleBook = () => {
             </Row>
 
             <Form.Group className="mb-3">
-              <Form.Label>Description</Form.Label>
+              <Form.Label>Address</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
-                name="book_description"
-                value={formData.book_description}
+                name="user_address"
+                value={formData.user_address}
                 onChange={handleChange}
                 required
               />

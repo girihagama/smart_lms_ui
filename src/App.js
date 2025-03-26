@@ -15,8 +15,8 @@ import Logout from "./pages/Logout"; // Import the dashboard page
 import Summary from "./pages/Summary";
 import SingleBook from "./pages/Book/SingleBook";
 import ManageBooks from "./pages/Book/ManageBooks";
-import MembersAdd from "./pages/Member";
-import MembersList from "./pages/Member";
+import SingleUser from "./pages/User/SingleUser";
+import ManageUsers from "./pages/User/ManageUsers";
 import TransactionsIssue from "./pages/Transaction";
 import TransactionsReturn from "./pages/Transaction";
 
@@ -47,8 +47,8 @@ function App() {
               <Route index element={<Summary/>} />
               <Route path="books/book" element={<SingleBook />} />
               <Route path="books/manage" element={<ManageBooks />} />
-              <Route path="members/add" element={<MembersAdd />} />
-              <Route path="members/list" element={<MembersList />} />
+              <Route path="users/user" element={<SingleUser />} />
+              <Route path="users/manage" element={<ManageUsers />} />
               <Route
                 path="transactions/issue"
                 element={<TransactionsIssue />}

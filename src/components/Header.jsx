@@ -33,7 +33,7 @@ const NavbarTop = () => {
             Welcome, {userName}
           </div>
           <div style={{ fontSize: "16px", fontWeight: "400", opacity: 0.85 }}>
-            Librarian | Smart Library
+            Librarian • Smart Library
           </div>
         </Navbar.Brand>
 

@@ -29,9 +29,8 @@ const navItems = [
     label: "Members",
     icon: <FaUsers />,
     children: [
-      { label: "Add Member", to: "/dashboard/members/add" },
-      { label: "Edit Member", to: "/dashboard/members/edit" },
-      { label: "View Members", to: "/dashboard/members/list" },
+      { label: "Add / Edit User", to: "/dashboard/users/user" },
+      { label: "Manage Users", to: "/dashboard/users/manage" },
     ],
   },
   {
@@ -40,7 +39,7 @@ const navItems = [
     children: [
       { label: "Issue Book", to: "/dashboard/transactions/issue" },
       { label: "Return Book", to: "/dashboard/transactions/return" },
-      { label: "View Transactions", to: "/dashboard/transactions/view" },
+      { label: "Manage Transactions", to: "/dashboard/transactions/manage" },
     ],
   },
 ];
@@ -86,6 +85,7 @@ const Sidebar = () => {
         {navItems.map((item, index) =>
           item.children ? (
             <div key={index}>
+              <hr/>
               <div
                 onClick={() => toggleMenu(item.label)}
                 className="d-flex justify-content-between align-items-center text-white px-3 py-2 rounded nav-link"
@@ -117,7 +117,7 @@ const Sidebar = () => {
                     </Nav.Link>
                   ))}
                 </div>
-              )}
+              )}              
             </div>
           ) : (
             <Nav.Link
