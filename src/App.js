@@ -13,12 +13,12 @@ import Dashboard from "./pages/Dashboard"; // Import the dashboard page
 import Logout from "./pages/Logout"; // Import the dashboard page
 
 import Summary from "./pages/Summary";
-import BooksAdd from "./pages/Book";
-import BooksManage from "./pages/Book";
-import MembersAdd from "./pages/Member";
-import MembersList from "./pages/Member";
-import TransactionsIssue from "./pages/Transaction";
-import TransactionsReturn from "./pages/Transaction";
+import SingleBook from "./pages/Book/SingleBook";
+import ManageBooks from "./pages/Book/ManageBooks";
+import SingleUser from "./pages/User/SingleUser";
+import ManageUsers from "./pages/User/ManageUsers";
+import TransactionsIssue from "./pages/Transaction/BorrowReturn";
+import TransactionsReturn from "./pages/Transaction/BorrowReturn";
 
 function App() {
   // Check if token exists in local storage
@@ -33,6 +33,7 @@ function App() {
             color: "white", // Set text color to white for contrast
             minHeight: "100vh", // Ensure the background covers the entire screen
           }}
+          className="Font-title-2"
         >
           <Routes>
             <Route
@@ -43,11 +44,11 @@ function App() {
               path="/dashboard/*"
               element={token ? <Dashboard /> : <Navigate to="/" />}
             >
-              <Route index element={<Summary/>} />
-              <Route path="books/add" element={<BooksAdd />} />
-              <Route path="books/manage" element={<BooksManage />} />
-              <Route path="members/add" element={<MembersAdd />} />
-              <Route path="members/list" element={<MembersList />} />
+              <Route index element={<Summary />} />
+              <Route path="books/book" element={<SingleBook />} />
+              <Route path="books/manage" element={<ManageBooks />} />
+              <Route path="users/user" element={<SingleUser />} />
+              <Route path="users/manage" element={<ManageUsers />} />
               <Route
                 path="transactions/issue"
                 element={<TransactionsIssue />}

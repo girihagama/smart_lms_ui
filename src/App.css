@@ -39,6 +39,10 @@
   background: linear-gradient(90deg, rgba(0, 226, 252, 1) 0%, rgba(0, 121, 255, 1) 100%);
 }
 
+.Gradient-text-1{
+  color: linear-gradient(90deg, rgba(0, 226, 252, 1) 0%, rgba(0, 121, 255, 1) 100%);
+}
+
 .Gradient-2{
 	background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
 	background-size: 400% 400%;
@@ -55,4 +59,70 @@
 	100% {
 		background-position: 0% 50%;
 	}
+}
+
+/* Card Container */
+.custom-card {
+  border: none;
+  padding: 20px;
+  border-radius: 20px;
+  color: white;
+  text-align: center;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+/* Hover Animation */
+.custom-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Gradient Backgrounds */
+.books-card {
+  color: white !important;
+  border-radius: 20px !important;
+}
+.members-card {
+  color: white !important;
+  border-radius: 20px !important;
+}
+.transactions-card {
+  color: white !important;
+  border-radius: 20px !important;
+}
+
+/* Icon Styling */
+.icon {
+  margin-bottom: 10px;
+  opacity: 0.8;
+}
+
+/* Statistics Number */
+.stat {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.add-book-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.add-book-btn {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.add-book-btn:hover {
+  background: #007bff;
+  color: black;
+}
+
+.text-white {
+  color: black !important;
 }

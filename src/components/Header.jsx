@@ -28,12 +28,12 @@ const NavbarTop = () => {
         className="d-flex justify-content-between align-items-center"
       >
         {/* Left Section - Welcome & Role */}
-        <Navbar.Brand className="text-white">
+        <Navbar.Brand className="text-white Font-title-1">
           <div style={{ fontSize: "28px", fontWeight: "600" }}>
             Welcome, {userName}
           </div>
           <div style={{ fontSize: "16px", fontWeight: "400", opacity: 0.85 }}>
-            Librarian | Smart Library
+            Librarian • Smart Library
           </div>
         </Navbar.Brand>
 
