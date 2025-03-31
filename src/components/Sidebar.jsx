@@ -37,8 +37,7 @@ const navItems = [
     label: "Transactions",
     icon: <FaExchangeAlt />,
     children: [
-      { label: "Issue Book", to: "/dashboard/transactions/issue" },
-      { label: "Return Book", to: "/dashboard/transactions/return" },
+      { label: "Borrow / Return", to: "/dashboard/transactions/transaction" },
       { label: "Manage Transactions", to: "/dashboard/transactions/manage" },
     ],
   },

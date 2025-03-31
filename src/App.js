@@ -17,8 +17,8 @@ import SingleBook from "./pages/Book/SingleBook";
 import ManageBooks from "./pages/Book/ManageBooks";
 import SingleUser from "./pages/User/SingleUser";
 import ManageUsers from "./pages/User/ManageUsers";
-import TransactionsIssue from "./pages/Transaction/BorrowReturn";
-import TransactionsReturn from "./pages/Transaction/BorrowReturn";
+import BorrowReturn from "./pages/Transaction/BorrowReturn";
+import TransactionManage from "./pages/Transaction/ManageTransactions";
 
 function App() {
   // Check if token exists in local storage
@@ -50,12 +50,12 @@ function App() {
               <Route path="users/user" element={<SingleUser />} />
               <Route path="users/manage" element={<ManageUsers />} />
               <Route
-                path="transactions/issue"
-                element={<TransactionsIssue />}
+                path="transactions/transaction"
+                element={<BorrowReturn />}
               />
               <Route
-                path="transactions/return"
-                element={<TransactionsReturn />}
+                path="transactions/manage"
+                element={<TransactionManage />}
               />
             </Route>
             <Route path="/logout" element={<Logout />} />
