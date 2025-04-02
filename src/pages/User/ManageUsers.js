@@ -1,143 +1,126 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { FirebaseConfigContext } from "../../FirebaseConfigContext"; // Import the context
 import { Table, Card, Pagination, Form } from "react-bootstrap";
 
 const ManageUsers = () => {
-  const users = [
-    {
-      id: 1,
-      email: "john.doe@example.com",
-      userName: "John Doe",
-      address: "123 Main St, NY",
-      phone: "+1 234 567 890",
-      dob: "1990-05-15",
-      maxBooks: 0,
-      type: "Librarian",
-      status: "Active",
-    },
-    {
-      id: 2,
-      email: "jane.smith@example.com",
-      userName: "Jane Smith",
-      address: "456 Elm St, CA",
-      phone: "+1 987 654 321",
-      dob: "1995-09-23",
-      maxBooks: 3,
-      type: "Member",
-      status: "Inactive",
-    },
-    {
-      id: 3,
-      email: "michael.brown@example.com",
-      userName: "Michael Brown",
-      address: "789 Oak St, TX",
-      phone: "+1 567 890 123",
-      dob: "1988-12-10",
-      maxBooks: 0,
-      type: "Librarian",
-      status: "Active",
-    },
-    {
-      id: 4,
-      email: "emily.johnson@example.com",
-      userName: "Emily Johnson",
-      address: "321 Maple St, FL",
-      phone: "+1 654 321 789",
-      dob: "1998-07-08",
-      maxBooks: 0,
-      type: "Member",
-      status: "Active",
-    },
-    {
-      id: 5,
-      email: "william.white@example.com",
-      userName: "William White",
-      address: "741 Birch St, IL",
-      phone: "+1 741 852 963",
-      dob: "1985-03-30",
-      maxBooks: 2,
-      type: "Member",
-      status: "Inactive",
-    },
-    {
-      id: 6,
-      email: "olivia.miller@example.com",
-      userName: "Olivia Miller",
-      address: "852 Cedar St, OH",
-      phone: "+1 369 258 147",
-      dob: "2000-12-05",
-      maxBooks: 4,
-      type: "Member",
-      status: "Active",
-    },
-    {
-      id: 7,
-      email: "daniel.wilson@example.com",
-      userName: "Daniel Wilson",
-      address: "963 Pine St, AZ",
-      phone: "+1 147 258 369",
-      dob: "1993-06-21",
-      maxBooks: 0,
-      type: "Librarian",
-      status: "Active",
-    },
-    {
-      id: 8,
-      email: "sophia.thomas@example.com",
-      userName: "Sophia Thomas",
-      address: "159 Redwood St, WA",
-      phone: "+1 753 951 852",
-      dob: "1997-09-18",
-      maxBooks: 0,
-      type: "Librarian",
-      status: "Inactive",
-    },
-    {
-      id: 9,
-      email: "alex.moore@example.com",
-      userName: "Alex Moore",
-      address: "357 Spruce St, CO",
-      phone: "+1 852 456 753",
-      dob: "1992-04-12",
-      maxBooks: 4,
-      type: "Member",
-      status: "Active",
-    },
-    {
-      id: 10,
-      email: "charlotte.davis@example.com",
-      userName: "Charlotte Davis",
-      address: "258 Aspen St, MA",
-      phone: "+1 951 753 456",
-      dob: "1991-11-25",
-      maxBooks: 2,
-      type: "Member",
-      status: "Inactive",
-    },
-  ];
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [resultsPerPage, setResultsPerPage] = useState(5);
+  const config = useContext(FirebaseConfigContext); // Access the config values
+  const [api_base_url, setApi_base_url] = useState("");
+  const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [resultsPerPage, setResultsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
 
-  // Filtered users based on search term
-  const filteredUsers = users.filter((user) =>
-    [user.email, user.userName, user.address, user.phone, user.type]
-      .join(" ")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, resultsPerPage]);
 
-  const totalPages = Math.ceil(filteredUsers.length / resultsPerPage);
+  // Set the API base URL if config is loaded
+  useEffect(() => {
+    if (!config) return;
 
-  // Get current users for the page
-  const currentUsers = filteredUsers.slice(
-    (currentPage - 1) * resultsPerPage,
-    currentPage * resultsPerPage
-  );
+    //const baseUrl = JSON.parse(config).api_base_url;
+    const baseUrl = "http://localhost:8090/";
+
+    fetch(`${baseUrl}user/search`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        searchTerm: searchTerm,
+        page: currentPage,
+        limit: resultsPerPage,
+      }),
+    })
+      .then((res) => {
+        //if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+        if (res.ok) return res.json();
+        else return;
+      })
+      .then((data) => {
+        console.log("API Response:", data);
+        setData(data.data || []);
+
+        // Update total pages
+        const newTotalPages = data.pagination?.totalPages || 1;
+        setTotalPages(newTotalPages);
+
+        // ✅ Move to page 1 ONLY IF needed
+        if (currentPage > newTotalPages) {
+          setCurrentPage(1);
+        }
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, [config, currentPage]);
+
+  useEffect(() => {
+    if (!config) return;
+
+    //const baseUrl = JSON.parse(config).api_base_url;
+    const baseUrl = "http://localhost:8090/";
+
+    fetch(`${baseUrl}user/search`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        searchTerm: searchTerm,
+        page: currentPage,
+        limit: resultsPerPage,
+      }),
+    })
+      .then((res) => {
+        //if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+        if (res.ok) return res.json();
+        else return;
+      })
+      .then((data) => {
+        console.log("API Response:", data);
+        setData(data.data || []);
+
+        // Update total pages
+        setTotalPages(data.pagination?.totalPages || 1);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, [config, currentPage, resultsPerPage]);
 
   // Handle page change
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+  };
+
+  const searchOnBlur = () => {
+    //load data
+    fetch("http://localhost:8090/" + "user/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // Add your token
+      },
+      body: JSON.stringify({
+        searchTerm: searchTerm,
+        page: currentPage,
+        limit: resultsPerPage,
+      }),
+    })
+      .then((res) => {
+        console.log(res);
+        //if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+        if (res.ok) return res.json(); // Convert response body to JSON
+        else return;
+      })
+      .then((data) => {
+        if (data) {
+          setData(data.data);
+          setTotalPages(data.pagination.totalPages);
+        } else {
+          setData([]);
+        }
+      });
   };
 
   return (
@@ -155,6 +138,7 @@ const ManageUsers = () => {
             placeholder="🔍 Search by Email, Name, Address, Phone, or Type"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onBlur={searchOnBlur}
           />
         </Form.Group>
 
@@ -174,27 +158,27 @@ const ManageUsers = () => {
               </tr>
             </thead>
             <tbody>
-              {currentUsers.length > 0 ? (
-                currentUsers.map((user) => (
-                  <tr key={user.id} className="align-middle">
-                    <td>{user.email}</td>
-                    <td className="fw-semibold">{user.userName}</td>
-                    <td>{user.address}</td>
-                    <td>{user.phone}</td>
-                    <td>{user.dob}</td>
-                    <td className="fw-bold">{user.maxBooks}</td>
+              {data.length > 0 ? (
+                data.map((user) => (
+                  <tr key={user.user_email} className="align-middle">
+                    <td>{user.user_email}</td>
+                    <td className="fw-semibold">{user.user_name}</td>
+                    <td>{user.user_address}</td>
+                    <td>{user.user_mobile}</td>
+                    <td>{new Date(user.user_dob).toLocaleDateString()}</td>
+                    <td className="fw-bold">{user.user_max_books}</td>
                     <td>
-                      <span className="badge bg-info">{user.type}</span>
+                      <span className="badge bg-info">{user.user_role}</span>
                     </td>
                     <td>
                       <span
                         className={`badge ${
-                          user.status === "Active"
+                          user.user_status === "Active"
                             ? "bg-success"
                             : "bg-secondary"
                         }`}
                       >
-                        {user.status}
+                        {user.user_status == "1" ? "Active" : "Inactive"}
                       </span>
                     </td>
                   </tr>
@@ -229,11 +213,13 @@ const ManageUsers = () => {
             </Form.Group>
 
             {/* Pagination */}
+            {/* Pagination */}
             <Pagination className="mb-0">
               <Pagination.Prev
                 disabled={currentPage === 1}
                 onClick={() => handlePageChange(currentPage - 1)}
               />
+
               {[...Array(totalPages)].map((_, index) => (
                 <Pagination.Item
                   key={index + 1}
@@ -243,6 +229,7 @@ const ManageUsers = () => {
                   {index + 1}
                 </Pagination.Item>
               ))}
+
               <Pagination.Next
                 disabled={currentPage === totalPages}
                 onClick={() => handlePageChange(currentPage + 1)}

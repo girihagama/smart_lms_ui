@@ -1,79 +1,124 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { FirebaseConfigContext } from "../../FirebaseConfigContext"; // Import the context
 import { Table, Card, Pagination, Form, Image } from "react-bootstrap";
 
 const MyTable = () => {
-  const data = [
-    {
-      id: 1742163101416,
-      name: "The Anxious Generation",
-      description: "Penguin Press (March 26, 2024)",
-      image: "https://backend.24x7retail.com/uploads/1742163101416.jpg",
-      latefee: 51,
-      condition: "Good",
-      status: "Available",
-    },
-    {
-      id: 1742556818645,
-      name: "The Catcher in the Rye",
-      description: "Little, Brown and Company (July 16, 1951)",
-      image: "https://backend.24x7retail.com/uploads/1742556818645.jpg",
-      latefee: 38,
-      condition: "Good",
-      status: "Available",
-    },
-    {
-      id: 1742694034593,
-      name: "The Housemaid",
-      description: "Grand Central Publishing (August 23, 2022)",
-      image: "https://backend.24x7retail.com/uploads/1742694034593.jpg",
-      latefee: 83,
-      condition: "Mint",
-      status: "Available",
-    },
-    {
-      id: 1742960608957,
-      name: "The Great Gatsby",
-      description: "Scribner (April 10, 1925)",
-      image: "https://backend.24x7retail.com/uploads/1742960608957.jpg",
-      latefee: 45,
-      condition: "Mint",
-      status: "Available",
-    },
-    {
-      id: 1743092097026,
-      name: "The Let Them Theory",
-      description: "Hay House LLC (December 24, 2024)",
-      image: "https://backend.24x7retail.com/uploads/1743092097026.jpg",
-      latefee: 90,
-      condition: "Good",
-      status: "Available",
-    },
-  ];
-
+  const config = useContext(FirebaseConfigContext); // Access the config values
+  const [api_base_url, setApi_base_url] = useState("");
+  const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [resultsPerPage, setResultsPerPage] = useState(5);
+  const [resultsPerPage, setResultsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
 
-  // Filter books based on search term
-  const filteredBooks = data.filter(
-    (book) =>
-      book.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      book.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      book.condition.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      book.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, resultsPerPage]);
 
-  const totalPages = Math.ceil(filteredBooks.length / resultsPerPage);
+  // Set the API base URL if config is loaded
+  useEffect(() => {
+    if (!config) return;
 
-  // Get current books for the page
-  const currentBooks = filteredBooks.slice(
-    (currentPage - 1) * resultsPerPage,
-    currentPage * resultsPerPage
-  );
+    const baseUrl = JSON.parse(config).api_base_url;
+
+    fetch(`${baseUrl}book/search`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        searchTerm: searchTerm,
+        page: currentPage,
+        limit: resultsPerPage,
+      }),
+    })
+      .then((res) => {
+        //if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+        if (res.ok) return res.json();
+        else return;
+      })
+      .then((data) => {
+        console.log("API Response:", data);
+        setData(data.data || []);
+
+        // Update total pages
+        const newTotalPages = data.pagination?.totalPages || 1;
+        setTotalPages(newTotalPages);
+
+        // ✅ Move to page 1 ONLY IF needed
+        if (currentPage > newTotalPages) {
+          setCurrentPage(1);
+        }
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, [config, currentPage]);
+
+  useEffect(() => {
+    if (!config) return;
+
+    const baseUrl = JSON.parse(config).api_base_url;
+
+    fetch(`${baseUrl}book/search`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        searchTerm: searchTerm,
+        page: currentPage,
+        limit: resultsPerPage,
+      }),
+    })
+      .then((res) => {
+        //if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+        if (res.ok) return res.json();
+        else return;
+      })
+      .then((data) => {
+        console.log("API Response:", data);
+        setData(data.data || []);
+
+        // Update total pages
+        setTotalPages(data.pagination?.totalPages || 1);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, [config, currentPage, resultsPerPage]);
 
   // Handle page change
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+  };
+
+  const searchOnBlur = () => {
+    //load data
+    fetch("http://localhost:8090/" + "book/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // Add your token
+      },
+      body: JSON.stringify({
+        searchTerm: searchTerm,
+        page: currentPage,
+        limit: resultsPerPage,
+      }),
+    })
+      .then((res) => {
+        console.log(res);
+        //if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+        if (res.ok) return res.json(); // Convert response body to JSON
+        else return;
+      })
+      .then((data) => {
+        if (data) {
+          setData(data.data);
+          setTotalPages(data.pagination.totalPages);
+        } else {
+          setData([]);
+        }
+      });
   };
 
   return (
@@ -89,6 +134,7 @@ const MyTable = () => {
             placeholder="🔍 Search books..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onBlur={searchOnBlur}
           />
         </Form.Group>
 
@@ -104,46 +150,75 @@ const MyTable = () => {
                 <th>Late Fee</th>
                 <th>Condition</th>
                 <th>Status</th>
+                <th>Readers</th>
+                <th>Rating</th>
               </tr>
             </thead>
             <tbody>
-              {currentBooks.map((book) => (
-                <tr key={book.id} className="align-middle">
-                  <td>{book.id}</td>
-                  <td className="fw-semibold">{book.name}</td>
-                  <td>{book.description}</td>
-                  <td>
-                    <Image
-                      src={book.image}
-                      alt="Book Cover"
-                      thumbnail
-                      style={{
-                        width: "50px",
-                        height: "auto",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => window.open(book.image, "_blank")}
-                    />
-                  </td>
-                  <td className="text-danger fw-bold">
-                    Rs.{book.latefee.toFixed(2)}
-                  </td>
-                  <td>
-                    <span className="badge bg-info">{book.condition}</span>
-                  </td>
-                  <td>
-                    <span
-                      className={`badge ${
-                        book.status === "Available"
-                          ? "bg-success"
-                          : "bg-secondary"
-                      }`}
-                    >
-                      {book.status}
-                    </span>
+              {data.length > 0 ? (
+                data.map((book) => (
+                  <tr key={book.book_id} className="align-middle">
+                    <td>{book.book_id}</td>
+                    <td className="fw-semibold">
+                      {book.book_name}
+                      <br />
+                      <span style={{ fontSize: "small", fontWeight: "400" }}>
+                        Created -{" "}
+                        {new Date(book.book_added_date).toLocaleString()}
+                      </span>
+                    </td>
+                    <td>{book.book_description}</td>
+                    <td>
+                      <Image
+                        src={book.book_image}
+                        alt="Book Cover"
+                        thumbnail
+                        style={{
+                          width: "50px",
+                          height: "auto",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => window.open(book.book_image, "_blank")}
+                      />
+                    </td>
+                    <td className="text-danger fw-bold">
+                      Rs.{book.book_late_fee.toFixed(2)}
+                    </td>
+                    <td>
+                      <span
+                        className={`badge ${
+                          book.book_condition == "Damaged"
+                            ? "bg-danger"
+                            : "bg-primary"
+                        }`}
+                      >
+                        {book.book_status == "1"
+                          ? book.book_condition
+                          : book.book_condition}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        className={`badge ${
+                          book.book_status == "1"
+                            ? "bg-success"
+                            : "bg-secondary"
+                        }`}
+                      >
+                        {book.book_status == "1" ? "Active" : "Inactive"}
+                      </span>
+                    </td>
+                    <td>{book.book_readers}</td>
+                    <td>{parseFloat(book.book_rating)}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" className="text-muted py-3">
+                    🚫 No matching records found
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </Table>
 
@@ -167,13 +242,13 @@ const MyTable = () => {
             </Form.Group>
 
             {/* Pagination */}
+            {/* Pagination */}
             <Pagination className="mb-0">
               <Pagination.Prev
                 disabled={currentPage === 1}
-                onClick={() =>
-                  currentPage > 1 && handlePageChange(currentPage - 1)
-                }
+                onClick={() => handlePageChange(currentPage - 1)}
               />
+
               {[...Array(totalPages)].map((_, index) => (
                 <Pagination.Item
                   key={index + 1}
@@ -183,11 +258,10 @@ const MyTable = () => {
                   {index + 1}
                 </Pagination.Item>
               ))}
+
               <Pagination.Next
                 disabled={currentPage === totalPages}
-                onClick={() =>
-                  currentPage < totalPages && handlePageChange(currentPage + 1)
-                }
+                onClick={() => handlePageChange(currentPage + 1)}
               />
             </Pagination>
           </div>
