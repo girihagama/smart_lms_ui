@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Form, Button, Card, Row, Col, ButtonGroup } from "react-bootstrap";
 
+import { FirebaseConfigContext } from "../../FirebaseConfigContext"; // Import the context
+
 const SingleBook = () => {
+  const config = useContext(FirebaseConfigContext); // Access the config values
+  const [api_base_url, setApi_base_url] = useState("");
   const [newUser, setNewUser] = useState(true);
   const [formData, setFormData] = useState({
     user_email: "",
@@ -11,8 +15,14 @@ const SingleBook = () => {
     user_dob: "",
     user_max_books: 5, // New Field: Max Books Can Borrow
     user_ismember: "1", // Member Status
-    user_isactive: "1", // New Field: Active Account
+    user_isactive: "2", // New Field: Active Account
   });
+
+  useEffect(() => {
+    if (!config) setApi_base_url("http://localhost:8090/");
+    else setApi_base_url(JSON.parse(config).api_base_url);
+    console.log(api_base_url);
+  }, [config]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,7 +32,70 @@ const SingleBook = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("User Data Submitted:", formData);
-    alert("User Data Submitted!");
+
+    //send request
+    if (newUser) {
+      //register user
+      fetch(api_base_url + "user/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Add your token
+        },
+        body: JSON.stringify({
+          email: formData.user_email,
+          name: formData.user_name,
+          mobile: formData.user_mobile,
+          address: formData.user_address,
+          dob: formData.user_dob,
+          max_books: formData.user_max_books,
+          role: formData.user_ismember === "1" ? "Member" : "Librarian",
+        }),
+      })
+        .then((response) => {
+          if (response.ok) {
+            setNewUser(false);
+          } else if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          alert(data.message);
+          handleReset();
+        });
+    } else {
+      //update user
+      fetch(api_base_url + "user/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Add your token
+        },
+        body: JSON.stringify({
+          email: formData.user_email,
+          name: formData.user_name,
+          mobile: formData.user_mobile,
+          address: formData.user_address,
+          dob: formData.user_dob,
+          max_books: formData.user_max_books,
+          role: formData.user_ismember === "1" ? "Member" : "Librarian",
+          status: formData.user_isactive,
+        }),
+      })
+        .then((response) => {
+          if (response.ok) {
+            setNewUser(false);
+          } else if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          alert(data.message);
+          handleReset();
+        });
+    }
   };
 
   const handleReset = () => {
@@ -36,13 +109,64 @@ const SingleBook = () => {
       user_dob: "",
       user_max_books: 5,
       user_ismember: "1",
-      user_isactive: "1", // Reset to Active
+      user_isactive: "2",
     });
   };
 
-  useEffect(() => {
-    // console.log("Form Data:", formData);
-  }, [formData.user_email]);
+  const handleBlur = (e) => {
+    if (formData.user_email == localStorage.getItem("user_email")) {
+      setFormData({ ...formData, user_email: "" });
+      return;
+    }
+    const isValidEmail = (email) => {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); // Simple email regex
+    };
+
+    if (isValidEmail(formData.user_email)) {
+      fetch(api_base_url + "user/info", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Add your token
+        },
+        body: JSON.stringify({ email: formData.user_email }),
+      })
+        .then((response) => {
+          if (response.ok) {
+            setNewUser(false);
+          } else if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("User Data", data);
+          setFormData({
+            user_email: data.user.user_email,
+            user_name: data.user.user_name,
+            user_mobile: data.user.user_mobile,
+            user_address: data.user.user_address,
+            user_dob: formatDateForInput(data.user.user_dob),
+            user_max_books:
+              data.user.user_role === "Member" ? data.user.user_max_books : 0,
+            user_ismember: data.user.user_role === "Member" ? "1" : "0",
+            user_isactive: data.user.user_status,
+          });
+        })
+        .catch((error) => console.error("Error fetching data:", error));
+    }
+  };
+
+  const formatDateForInput = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Ensure two digits
+    const day = String(date.getDate()).padStart(2, "0"); // Ensure two digits
+    console.log(year, month, day);
+    return `${year}-${month}-${day}`;
+  };
+
+  useEffect(() => {}, [formData]);
 
   return (
     <div>
@@ -69,6 +193,8 @@ const SingleBook = () => {
                     name="user_email"
                     value={formData.user_email}
                     onChange={handleChange}
+                    disabled={!newUser}
+                    onBlur={handleBlur}
                     required
                   />
                 </Form.Group>
@@ -96,20 +222,7 @@ const SingleBook = () => {
                     name="user_dob"
                     value={formData.user_dob}
                     onChange={handleChange}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={4}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Max Books Can Borrow</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="user_max_books"
-                    value={formData.user_max_books}
-                    onChange={handleChange}
-                    min="1"
-                    max="10"
-                    required
+                    max={new Date().toISOString().split("T")[0]} // Prevent future dates
                   />
                 </Form.Group>
               </Col>
@@ -121,6 +234,26 @@ const SingleBook = () => {
                     name="user_mobile"
                     value={formData.user_mobile}
                     onChange={handleChange}
+                    maxLength={9} // Prevents more than 9 digits
+                    pattern="\d{1,9}" // Ensures only numbers are allowed
+                    placeholder="eg: 712345678"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group
+                  hidden={formData.user_ismember == 0}
+                  className="mb-3"
+                >
+                  <Form.Label>Max Books Can Borrow</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="user_max_books"
+                    value={formData.user_max_books}
+                    onChange={handleChange}
+                    min="1"
+                    max="10"
                     required
                   />
                 </Form.Group>
@@ -156,7 +289,10 @@ const SingleBook = () => {
             </Form.Group>
 
             {/* Active Account Switch */}
-            <Form.Group className="mb-3">
+            <Form.Group
+              className="mb-3"
+              hidden={formData.user_isactive === "2"}
+            >
               <Form.Check
                 type="switch"
                 label="Active"

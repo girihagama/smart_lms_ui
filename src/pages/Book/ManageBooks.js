@@ -12,16 +12,18 @@ const MyTable = () => {
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
+    if (!config) setApi_base_url("http://localhost:8090/");
+    else setApi_base_url(JSON.parse(config).api_base_url);
+    console.log(api_base_url);
+  }, [config]);
+
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, resultsPerPage]);
 
   // Set the API base URL if config is loaded
   useEffect(() => {
-    if (!config) return;
-
-    const baseUrl = JSON.parse(config).api_base_url;
-
-    fetch(`${baseUrl}book/search`, {
+    fetch(api_base_url + "book/search", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -52,14 +54,10 @@ const MyTable = () => {
         }
       })
       .catch((error) => console.error("Error fetching data:", error));
-  }, [config, currentPage]);
+  }, [currentPage]);
 
   useEffect(() => {
-    if (!config) return;
-
-    const baseUrl = JSON.parse(config).api_base_url;
-
-    fetch(`${baseUrl}book/search`, {
+    fetch(api_base_url + "book/search", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -84,7 +82,7 @@ const MyTable = () => {
         setTotalPages(data.pagination?.totalPages || 1);
       })
       .catch((error) => console.error("Error fetching data:", error));
-  }, [config, currentPage, resultsPerPage]);
+  }, [currentPage, resultsPerPage]);
 
   // Handle page change
   const handlePageChange = (pageNumber) => {
@@ -93,7 +91,7 @@ const MyTable = () => {
 
   const searchOnBlur = () => {
     //load data
-    fetch("http://localhost:8090/" + "book/search", {
+    fetch(api_base_url + "book/search", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -214,7 +212,7 @@ const MyTable = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="8" className="text-muted py-3">
+                  <td colSpan="9" className="text-muted py-3">
                     🚫 No matching records found
                   </td>
                 </tr>

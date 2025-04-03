@@ -1,67 +1,157 @@
-import React, { useState } from "react";
-import { Table, Card, Pagination, Form } from "react-bootstrap";
+import React, { useEffect, useState, useContext } from "react";
+import { FirebaseConfigContext } from "../../FirebaseConfigContext"; // Import the context
+import { Table, Card, Pagination, Form, Button } from "react-bootstrap";
 
 const ManageTransactions = () => {
-  const transactions = [
-    {
-      id: 1,
-      userEmail: "john.doe@example.com",
-      bookTitle: "The Great Gatsby",
-      borrowDate: "2025-03-01",
-      returnDate: "2025-03-15",
-      status: "Returned",
-    },
-    {
-      id: 2,
-      userEmail: "jane.smith@example.com",
-      bookTitle: "1984",
-      borrowDate: "2025-03-05",
-      returnDate: null,
-      status: "Borrowed",
-    },
-    {
-      id: 3,
-      userEmail: "michael.brown@example.com",
-      bookTitle: "To Kill a Mockingbird",
-      borrowDate: "2025-03-10",
-      returnDate: null,
-      status: "Due",
-    },
-    {
-      id: 4,
-      userEmail: "emily.johnson@example.com",
-      bookTitle: "Moby Dick",
-      borrowDate: "2025-02-20",
-      returnDate: "2025-03-02",
-      status: "Returned",
-    },
-  ];
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [resultsPerPage, setResultsPerPage] = useState(5);
+  const config = useContext(FirebaseConfigContext); // Access the config values
+  const [api_base_url, setApi_base_url] = useState("");
+  const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [resultsPerPage, setResultsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
   const [filterStatus, setFilterStatus] = useState("All");
 
-  // Filter transactions based on search term and status
-  const filteredTransactions = transactions.filter((transaction) =>
-    [transaction.userEmail, transaction.bookTitle]
-      .join(" ")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase()) &&
-    (filterStatus === "All" || transaction.status === filterStatus)
-  );
+  useEffect(() => {
+    if (!config) setApi_base_url("http://localhost:8090/");
+    else setApi_base_url(JSON.parse(config).api_base_url);
+    console.log(api_base_url);
+  }, [config]);
 
-  const totalPages = Math.ceil(filteredTransactions.length / resultsPerPage);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterStatus, resultsPerPage]);
 
-  // Get current transactions for the page
-  const currentTransactions = filteredTransactions.slice(
-    (currentPage - 1) * resultsPerPage,
-    currentPage * resultsPerPage
-  );
+  // Set the API base URL if config is loaded
+  useEffect(() => {
+    fetch(api_base_url + "transaction/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        searchTerm: searchTerm,
+        transactionStatus: filterStatus,
+        page: currentPage,
+        limit: resultsPerPage,
+      }),
+    })
+      .then((res) => {
+        //if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+        if (res.ok) return res.json();
+        else return;
+      })
+      .then((data) => {
+        console.log("API Response:", data);
+        setData(data.data || []);
+
+        // Update total pages
+        const newTotalPages = data.pagination?.totalPages || 1;
+        setTotalPages(newTotalPages);
+
+        // ✅ Move to page 1 ONLY IF needed
+        if (currentPage > newTotalPages) {
+          setCurrentPage(1);
+        }
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (!config) return;
+
+    //const baseUrl = JSON.parse(config).api_base_url;
+    const baseUrl = "http://localhost:8090/";
+
+    fetch(api_base_url + "transaction/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        searchTerm: searchTerm,
+        transactionStatus: filterStatus,
+        page: currentPage,
+        limit: resultsPerPage,
+      }),
+    })
+      .then((res) => {
+        //if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+        if (res.ok) return res.json();
+        else return;
+      })
+      .then((data) => {
+        console.log("API Response:", data);
+        setData(data.data || []);
+
+        // Update total pages
+        setTotalPages(data.pagination?.totalPages || 1);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, [currentPage, resultsPerPage, filterStatus]);
 
   // Handle page change
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+  };
+
+  const searchOnBlur = () => {
+    //load data
+    fetch(api_base_url + "transaction/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // Add your token
+      },
+      body: JSON.stringify({
+        searchTerm: searchTerm,
+        transactionStatus: filterStatus,
+        page: currentPage,
+        limit: resultsPerPage,
+      }),
+    })
+      .then((res) => {
+        console.log(res);
+        return res.json(); // Convert response body to JSON
+      })
+      .then((data) => {
+        if (data) {
+          setData(data.data);
+          setTotalPages(data.pagination.totalPages);
+        } else {
+          setData([]);
+        }
+      });
+  };
+
+  const notifyDue = () => {
+    fetch(api_base_url + "transaction/due-notify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // Add your token
+      },
+    }).then((res) => {
+      console.log(res);
+      if (res.ok) alert("Notifications sent!"); // Convert response body to JSON
+      else alert("Notifications not sent!");
+    });
+  };
+
+  const notifyEarlyDue = () => {
+    fetch(api_base_url + "transaction/due-early-notify/" + 7, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // Add your token
+      },
+    }).then((res) => {
+      console.log(res);
+      if (res.ok) alert("Notifications sent!"); // Convert response body to JSON
+      else alert("Notifications not sent!");
+    });
   };
 
   return (
@@ -79,6 +169,7 @@ const ManageTransactions = () => {
             placeholder="🔍 Search by Email or Book Title"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onBlur={searchOnBlur}
           />
 
           <Form.Select
@@ -86,9 +177,25 @@ const ManageTransactions = () => {
             onChange={(e) => setFilterStatus(e.target.value)}
           >
             <option value="All">All Transactions</option>
-            <option value="Borrowed">Borrowed</option>
+            <option value="Issued">Issued</option>
             <option value="Returned">Returned</option>
+            <option value="Due">Due</option>
           </Form.Select>
+
+          {filterStatus === "Due" ? (
+            <Button variant="danger" onClick={notifyDue}>
+              NOTIFY
+            </Button>
+          ) : (
+            ""
+          )}
+          {filterStatus === "Issued" ? (
+            <Button variant="success" onClick={notifyEarlyDue}>
+              NOTIFY
+            </Button>
+          ) : (
+            ""
+          )}
         </div>
 
         <Card.Body className="p-0">
@@ -96,37 +203,72 @@ const ManageTransactions = () => {
           <Table striped bordered hover responsive className="text-center">
             <thead className="bg-primary text-white">
               <tr>
+                <th>#</th>
+                <th>Book Details</th>
                 <th>User Email</th>
-                <th>Book Title</th>
                 <th>Borrow Date</th>
                 <th>Return Date</th>
                 <th>Status</th>
+                <th>Late Payments</th>
               </tr>
             </thead>
             <tbody>
-              {currentTransactions.length > 0 ? (
-                currentTransactions.map((transaction) => (
-                  <tr key={transaction.id} className="align-middle">
-                    <td>{transaction.userEmail}</td>
-                    <td className="fw-semibold">{transaction.bookTitle}</td>
-                    <td>{transaction.borrowDate}</td>
-                    <td>{transaction.returnDate || "Not Returned"}</td>
+              {data.length > 0 ? (
+                data.map((transaction) => (
+                  <tr key={transaction.transaction_id} className="align-middle">
+                    <td>{transaction.transaction_id}</td>
+                    <td className="fw-semibold" style={{ textAlign: "left" }}>
+                      {transaction.book_name}
+                      <br />
+                      <span style={{ fontSize: "small", fontWeight: "400" }}>
+                        Book ID - {transaction.transaction_book_id}
+                      </span>
+                    </td>
+                    <td>{transaction.transaction_user_email}</td>
+                    <td>
+                      {new Date(
+                        transaction.transaction_borrow_date
+                      ).toLocaleString()}
+                    </td>
+                    <td>
+                      {new Date(
+                        transaction.transaction_return_date
+                      ).toLocaleString()}
+                    </td>
                     <td>
                       <span
                         className={`badge ${
-                          transaction.status === "Returned"
+                          transaction.transaction_status === "Due"
+                            ? "bg-danger"
+                            : transaction.transaction_status === "Returned"
                             ? "bg-success"
                             : "bg-warning"
                         }`}
                       >
-                        {transaction.status}
+                        {transaction.transaction_status}
                       </span>
+                    </td>
+                    <td>
+                      {transaction.transaction_status === "Due" ||
+                      transaction.transaction_late_days ? (
+                        <div style={{ fontWeight: "bold" }}>
+                          {transaction.transaction_late_paid
+                            ? "Receipt #: " + transaction.transaction_late_paid
+                            : "Not Paid"}
+                          <br />
+                          Rs.{transaction.transaction_late_fee} ×{" "}
+                          {transaction.transaction_late_days} day(s) = Rs.
+                          {transaction.transaction_late_payments}
+                        </div>
+                      ) : (
+                        "No fines."
+                      )}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="text-muted py-3">
+                  <td colSpan="7" className="text-muted py-3">
                     🚫 No matching records found
                   </td>
                 </tr>
@@ -154,11 +296,13 @@ const ManageTransactions = () => {
             </Form.Group>
 
             {/* Pagination */}
+            {/* Pagination */}
             <Pagination className="mb-0">
               <Pagination.Prev
                 disabled={currentPage === 1}
                 onClick={() => handlePageChange(currentPage - 1)}
               />
+
               {[...Array(totalPages)].map((_, index) => (
                 <Pagination.Item
                   key={index + 1}
@@ -168,6 +312,7 @@ const ManageTransactions = () => {
                   {index + 1}
                 </Pagination.Item>
               ))}
+
               <Pagination.Next
                 disabled={currentPage === totalPages}
                 onClick={() => handlePageChange(currentPage + 1)}

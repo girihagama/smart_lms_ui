@@ -12,17 +12,18 @@ const ManageUsers = () => {
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
+    if (!config) setApi_base_url("http://localhost:8090/");
+    else setApi_base_url(JSON.parse(config).api_base_url);
+    console.log(api_base_url);
+  }, [config]);
+
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, resultsPerPage]);
 
   // Set the API base URL if config is loaded
   useEffect(() => {
-    if (!config) return;
-
-    //const baseUrl = JSON.parse(config).api_base_url;
-    const baseUrl = "http://localhost:8090/";
-
-    fetch(`${baseUrl}user/search`, {
+    fetch(api_base_url + "user/search", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -40,7 +41,7 @@ const ManageUsers = () => {
         else return;
       })
       .then((data) => {
-        console.log("API Response:", data);
+        //console.log("API Response:", data);
         setData(data.data || []);
 
         // Update total pages
@@ -53,15 +54,10 @@ const ManageUsers = () => {
         }
       })
       .catch((error) => console.error("Error fetching data:", error));
-  }, [config, currentPage]);
+  }, [currentPage]);
 
   useEffect(() => {
-    if (!config) return;
-
-    //const baseUrl = JSON.parse(config).api_base_url;
-    const baseUrl = "http://localhost:8090/";
-
-    fetch(`${baseUrl}user/search`, {
+    fetch(api_base_url + "user/search", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,7 +82,7 @@ const ManageUsers = () => {
         setTotalPages(data.pagination?.totalPages || 1);
       })
       .catch((error) => console.error("Error fetching data:", error));
-  }, [config, currentPage, resultsPerPage]);
+  }, [currentPage, resultsPerPage]);
 
   // Handle page change
   const handlePageChange = (pageNumber) => {
@@ -95,7 +91,7 @@ const ManageUsers = () => {
 
   const searchOnBlur = () => {
     //load data
-    fetch("http://localhost:8090/" + "user/search", {
+    fetch(api_base_url + "user/search", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -168,12 +164,20 @@ const ManageUsers = () => {
                     <td>{new Date(user.user_dob).toLocaleDateString()}</td>
                     <td className="fw-bold">{user.user_max_books}</td>
                     <td>
-                      <span className="badge bg-info">{user.user_role}</span>
+                      <span
+                        className={`badge ${
+                          user.user_role === "Librarian"
+                            ? "bg-danger"
+                            : "bg-primary"
+                        }`}
+                      >
+                        {user.user_role}
+                      </span>
                     </td>
                     <td>
                       <span
                         className={`badge ${
-                          user.user_status === "Active"
+                          user.user_status === "1"
                             ? "bg-success"
                             : "bg-secondary"
                         }`}

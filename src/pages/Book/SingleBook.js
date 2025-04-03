@@ -17,6 +17,12 @@ const SingleBook = () => {
     book_status: "1",
   });
 
+  useEffect(() => {
+    if (!config) setApi_base_url("http://localhost:8090/");
+    else setApi_base_url(JSON.parse(config).api_base_url);
+    console.log(api_base_url);
+  }, [config]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     const file = e.target.files ? e.target.files[0] : null;
@@ -36,7 +42,7 @@ const SingleBook = () => {
     formData.isNew = newBook;
     console.log("Submitting:", formData);
 
-    fetch("http://localhost:8090/" + "book/add", {
+    fetch(api_base_url + "book/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -60,7 +66,7 @@ const SingleBook = () => {
     e.preventDefault();
     console.log("Checking the book availability in database");
 
-    fetch("http://localhost:8090/" + "book/one", {
+    fetch(api_base_url + "book/one", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -110,10 +116,6 @@ const SingleBook = () => {
       book_status: "1",
     });
   };
-
-  useEffect(() => {
-    console.log("api_base_url:", api_base_url);
-  }, [api_base_url]);
 
   // Set the API base URL if config is loaded
   useEffect(() => {
